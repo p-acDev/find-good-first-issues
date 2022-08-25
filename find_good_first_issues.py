@@ -38,7 +38,7 @@ def find_issues(html_raw_data):
     for repo in repo_list:
         # create the new url
         url = f"https://github.com{repo}/contribute"
-        soup = BeautifulSoup(get_html_data(url, status), 'html.parser')
+        soup = BeautifulSoup(get_html_data(url), 'html.parser')
         # find if there is good firt issue
         extract_issue_num = lambda elem: elem.split('/')[-1] 
         __good_first_issues = [f"https://github.com{repo}/issues/{extract_issue_num(elem['href'])}" for elem in soup.find_all("a", class_=os.environ.get("ISSUES_CLASS"))]
