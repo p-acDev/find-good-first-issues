@@ -2,16 +2,14 @@ from bs4 import BeautifulSoup
 import requests
 import os
 
-STATUS = "TEST"
+def get_html_data(url, status):
+    
+    try:
+        os.mkdir("./_html_data")
+    except FileExistsError:
+        pass
 
-try:
-    os.mkdir("./_html_data")
-except FileExistsError:
-    pass
-
-def get_html_data(url, status="TEST"):
-
-    if STATUS == "TEST":
+    if status == "TEST":
     
         # save the output to avoid doing too many queries on the github site during tests =D
         try:
@@ -26,7 +24,7 @@ def get_html_data(url, status="TEST"):
                 f.write(html_raw_data)
             print("[*] File was not available and was downloaded")
     
-    elif STATUS == "PROD":
+    elif status == "PROD":
         
         # to ensure we have up to date data
         req = requests.get(url)
@@ -34,23 +32,33 @@ def get_html_data(url, status="TEST"):
         
     return html_raw_data
 
-if __name__ == "__main__":
-    topic = "python"
-
-    url = f"https://github.com/topics/{topic}"
-
-    soup = BeautifulSoup(get_html_data(url), 'html.parser')
+def find_issues(html_raw_data, status):
+    
+    soup = BeautifulSoup(html_raw_data, 'html.parser')
 
     # get the list of all repositories
-    repo_list = [elem['href'] for elem in soup.find_all("a", class_="text-bold wb-break-word")]
+    repo_list = [elem['href'] for elem in soup.find_all("a", class_=os.environ.get("REPO_CLASS"))]
 
     # find in each repo check if there is a good-firt issue
     good_first_issues = {}
     for repo in repo_list:
         # create the new url
         url = f"https://github.com{repo}/contribute"
-        soup = BeautifulSoup(get_html_data(url), 'html.parser')
+        soup = BeautifulSoup(get_html_data(url, status), 'html.parser')
         # find if there is good firt issue
-        __good_first_issues = [elem['href'] for elem in soup.find_all("a", class_="Link--primary h4 js-navigation-open no-underline v-align-middle")]
+        extract_issue_num = lambda elem: elem.split('/')[-1] 
+        __good_first_issues = [f"https://github.com{repo}/issues/{extract_issue_num(elem['href'])}" for elem in soup.find_all("a", class_=os.environ.get("ISSUES_CLASS"))]
         good_first_issues[repo] = __good_first_issues
         
+        
+    return good_first_issues
+
+if __name__ == "__main__":
+    
+    topic = "python"
+
+    url = f"https://github.com/topics/{topic}"
+
+    html_raw_data = get_html_data(url)
+    
+    good_first_issues = find_issues(html_raw_data)

@@ -1,0 +1,5 @@
+ENV=TEST
+
+# key word
+REPO_CLASS="text-bold wb-break-word" 
+ISSUES_CLASS="Link--primary h4 js-navigation-open no-underline v-align-middle"
