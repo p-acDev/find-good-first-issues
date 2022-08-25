@@ -14,9 +14,9 @@ if topic and st.button("Find"):
     
     url = f"https://github.com/topics/{topic}"
 
-    html_raw_data = get_html_data(url, status=os.environ.get("ENV", "TEST"))
+    html_raw_data = get_html_data(url)
 
-    good_first_issues = find_issues(html_raw_data, status=os.environ.get("ENV", "TEST"))
+    good_first_issues = find_issues(html_raw_data)
 
     for repo, issues in good_first_issues.items():
         if issues != []:

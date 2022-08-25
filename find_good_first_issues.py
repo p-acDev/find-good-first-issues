@@ -2,37 +2,31 @@ from bs4 import BeautifulSoup
 import requests
 import os
 
-def get_html_data(url, status):
+def get_html_data(url):
     
     try:
         os.mkdir("./_html_data")
     except FileExistsError:
         pass
 
-    if status == "TEST":
-    
-        # save the output to avoid doing too many queries on the github site during tests =D
-        try:
-            with open(f"./_html_data/_html_data_{'_'.join(url.split('/')[-2:])}.txt", 'rb') as f:
-                html_raw_data = f.read()
-                print("[+] File read from already downloaded html")
-        except FileNotFoundError:
-            req = requests.get(url)
-            html_raw_data = req.content
-            with open(f"./_html_data/_html_data_{'_'.join(url.split('/')[-2:])}.txt", 'wb') as f:
-                # write in case of further use
-                f.write(html_raw_data)
-            print("[*] File was not available and was downloaded")
-    
-    elif status == "PROD":
-        
-        # to ensure we have up to date data
+
+    # save the output to avoid doing too many queries on the github site during tests
+    try:
+        with open(f"./_html_data/_html_data_{'_'.join(url.split('/')[-2:])}.txt", 'rb') as f:
+            html_raw_data = f.read()
+            print("[+] File read from already downloaded html")
+    except FileNotFoundError:
         req = requests.get(url)
         html_raw_data = req.content
+        with open(f"./_html_data/_html_data_{'_'.join(url.split('/')[-2:])}.txt", 'wb') as f:
+            # write in case of further use
+            f.write(html_raw_data)
+        print("[*] File was not available and was downloaded")
+    
         
     return html_raw_data
 
-def find_issues(html_raw_data, status):
+def find_issues(html_raw_data):
     
     soup = BeautifulSoup(html_raw_data, 'html.parser')
 
