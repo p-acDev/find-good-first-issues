@@ -7,4 +7,4 @@
 
 ## Introduction
 
-Cette app permet de trouver lister les *good firs issues* d'un repo en fonction d'un topic recherché.
+This app allows to find if any the *good first issues* of a repo so that user can try to contribute.
